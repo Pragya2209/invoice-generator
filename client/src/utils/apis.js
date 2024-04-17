@@ -1,4 +1,4 @@
-const REACT_APP_API_ENDPOINT = 'https://invoice-generator-w0vq.onrender.com'//process.env.REACT_APP_API_ENDPOINT
+const REACT_APP_API_ENDPOINT = 'https://invoice-generator-h2eq.onrender.com'//process.env.REACT_APP_API_ENDPOINT
 
 function getMessage(responeObj) {
     let message = responeObj.message
