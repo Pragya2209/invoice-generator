@@ -141,7 +141,13 @@ async function generatePDF(data) {
     const template = handlebars.compile(templateSource);
 
     const html = template(data);
-    const browser = await puppeteer.launch({headless : true});
+    const browser = await puppeteer.launch({
+        headless : true,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            ]
+        });
     const page = await browser.newPage();
     await page.setContent(html);
     let filename = __dirname + +'/'+new Date().toDateString()+'invoice.pdf'
