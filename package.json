@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "install-server": "npm install && npx puppeteer browsers install chrome && cd client && npm install",
+    "install-server": "npm install && node node_modules/puppeteer/install.js && cd client && npm install",
     "start-server": "node server.js && cd client && npm run build",
     "install-client": "cd client && npm install",
     "build-client": "cd client && npm run build",
