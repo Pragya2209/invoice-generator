@@ -114,12 +114,10 @@ async function generatePDF(data) {
             name,
             list: groupedItems[name]
         }));        
-       data.items = transformedItems
-        
+       data.items = transformedItems      
     }
-    console.log(JSON.stringify(data))
+
     let itemCount = data.items.reduce((count, group) => count + group.list.length, data.items.length);
-    console.log('==========', itemCount, data.items)
     const emptyRowsNeeded = MAX_ROWS - itemCount;
     
     if (emptyRowsNeeded > 0) {
