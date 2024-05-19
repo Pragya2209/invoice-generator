@@ -13,7 +13,7 @@ const path = require('path');
 const puppeteer = require('puppeteer');
 const handlebars = require('handlebars');
 const mongoose = require('mongoose');
-const { convertNumberToWords, formatDate } = require('../utils/common-function.js');
+const { convertNumberToWords, formatDate, convertCurrencyToWords } = require('../utils/common-function.js');
 const MAX_ROWS = 17
 
 handlebars.registerHelper('inc', function(value, options) {
@@ -23,7 +23,7 @@ handlebars.registerHelper('inc', function(value, options) {
 const createInvoice = async (req, res) => {
     const session = await mongoose.startSession();
     session.startTransaction();
-
+    let pdfPath
     try {
         const { currency, PODate, PONumber, currentDate, grandTotal, hsn, id, isOpen, items, companyName, companyAddress, companyCity, companyState, companyPincode, companyCountry, companyGSTNumber, cgstPerc, igstPerc, sgstPerc, total, cgst, sgst, igst } = req.body
         const invoiceNumber = await getNextSequence('invoice', session);
@@ -55,13 +55,10 @@ const createInvoice = async (req, res) => {
             PODate: formatDate(PODate),
             PODateFormat:  PODate
         }
-        console.log(data)
         const newInvoice = new InvoiceModel(data);
-        // console.log(newInvoice)
         const savedInvoice = await newInvoice.save({session});
-        console.log(savedInvoice)
        
-        let pdfPath = await generatePDF(data)
+        pdfPath = await generatePDF(data)
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=${path.basename(pdfPath)}`);
 
@@ -74,6 +71,11 @@ const createInvoice = async (req, res) => {
         await session.abortTransaction();
         session.endSession();
         res.status(400).send({ error: 'Some unexpected error occured' })
+    }
+    finally {
+        // setTimeout(() => {
+        //     fs.unlinkSync(pdfPath)
+        // },5000)
     }
 }
 
@@ -183,7 +185,6 @@ const getList = async (req, res) => {
         let [companyList, gstList] = await Promise.all([
             Company.find(), GSTRate.find()
         ])
-        console.log(companyList, gstList)
         return res.status(200).send({ message : 'GetList', data : {companyList, gstList} })
     }
     catch (error) {
